@@ -1,61 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lead Assignment App (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A role‑based lead management and assignment system built with Laravel and MySQL. It supports Admin, Leader, Developer, Channel Partner (CP), Customer Service (CS) and Biddable roles. Leads are assigned to mapped channel partners in a deterministic, fair order using CP numbers and the last assignment history.
 
-## About Laravel
+## Installation & Usage
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1) Clone the repository
+```bash
+git clone https://github.com/compilerharris/lms-vibe-coding.git
+cd lms-vibe-coding/lead-assignment-app
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2) Install PHP dependencies
+```bash
+composer install
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3) Environment
+```bash
+cp .env.example .env
+# Edit .env and set your DB_* values (MySQL), APP_URL, etc.
+```
 
-## Learning Laravel
+4) Generate key & run migrations
+```bash
+php artisan key:generate
+php artisan migrate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+5) (Optional) Seed or create users and roles via UI/SQL as needed.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+6) Run the app
+```bash
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+7) A simple API test page is available under `public/` and a minimal demo frontend exists at `lead-assignment-app-frontend/`.
 
-## Laravel Sponsors
+## Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Multi‑role access: Admin, Leader, Developer, Channel Partner, CS, Biddable.
+- Developer ↔ CP Mapping:
+  - Admin UI to map channel partner users to developer users.
+  - “Edit” action on each developer card pre‑fills the mapping form with already mapped CPs.
+  - Only mapped CPs appear where appropriate (e.g., Developer dashboard, Lead edit form).
+- Deterministic CP assignment:
+  - Each CP user has a unique integer `cp_number` (migration populates missing numbers; unique index enforced at DB).
+  - For each developer+project, the system checks the last assigned CP. If last was number N, the next goes to the smallest number > N; if none, it cycles to the lowest number.
+- Lead edit safety: In Edit Lead, the “Channel Partner” dropdown lists only CPs mapped to the selected lead’s project’s developer.
+- Dashboards:
+  - Developer dashboard shows only mapped CPs, plus analytics: total leads, converted leads, conversion rate, active projects, charts.
+  - CS/Biddable dashboard with metrics and recent leads.
+  - Channel Partner dashboard lists the CP’s assigned leads with analytics.
+- API endpoints (for landing pages/integrations):
+  - `POST /api/v1/leads` – create a lead for a given `developer_alt_name` and `project_alt_name`.
+  - `GET  /api/v1/developers-projects` – list developers with active projects and alt names.
+- QoL: Select2 multi‑select, DataTables for tables, and Chart.js charts.
 
-### Premium Partners
+## Technologies Used
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8.2+
+- Laravel (Blade, Eloquent, Migrations)
+- MySQL
+- Bootstrap 5, Select2, DataTables, Chart.js
+- Vanilla JS / jQuery for light interactions
 
-## Contributing
+## API – Quick Start
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Create lead
+```http
+POST /api/v1/leads
+Content-Type: application/json
+Accept: application/json
 
-## Code of Conduct
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "+1234567890",
+  "source": "Website",
+  "message": "Interested",
+  "developer_alt_name": "DEVXXXXX",
+  "project_alt_name":   "PRJYYYYY"
+}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Get developers & projects
+```http
+GET /api/v1/developers-projects
+Accept: application/json
+```
 
-## Security Vulnerabilities
+## Folder Structure (excerpt)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+lms-vibe-coding/
+└── lead-assignment-app/
+    ├── app/
+    │   ├── Http/Controllers/
+    │   │   ├── Api/LeadApiController.php
+    │   │   ├── CSDashboardController.php
+    │   │   ├── CPDashboardController.php
+    │   │   ├── DeveloperDashboardController.php
+    │   │   ├── DeveloperMappingController.php
+    │   │   └── LeadController.php
+    │   └── Models/
+    ├── database/migrations/
+    ├── public/
+    ├── resources/views/
+    ├── routes/web.php
+    ├── routes/api.php
+    └── README.md
+```
 
-## License
+## Development Notes
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `.env` and `vendor/` are intentionally ignored by Git. Copy `.env.example` to `.env` and set your environment.
+- Migrations include helpers to populate missing `cp_number` and add a unique index.
+- The mapping UI ensures a CP is active and can be mapped to a single developer at a time.
+
+## Stay in touch
+
+- LinkedIn - [@linkedin-compilerharris](https://www.linkedin.com/in/compilerharris)
+- Medium  - [@medium-compilerharris](https://medium.com/@compilerharris)
+- Twitter - [@compilerharris](https://twitter.com/compilerharris)
+
+## Author
+
+Haris Shaikh.

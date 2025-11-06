@@ -355,7 +355,21 @@ $(document).ready(function() {
                 text: '<i class="fas fa-file-csv me-2"></i>Export CSV',
                 className: 'btn btn-sm btn-outline-success',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6] // Export all columns
+                    columns: [0, 1, 2, 3, 4, 5, 6],
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (typeof data === 'string' && data.includes('<')) {
+                                var tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = data;
+                                var text = tempDiv.textContent || tempDiv.innerText || '';
+                                return text.trim();
+                            }
+                            return data;
+                        }
+                    }
+                },
+                filename: function() {
+                    return 'leads_' + new Date().toISOString().split('T')[0];
                 }
             },
             {
@@ -363,8 +377,45 @@ $(document).ready(function() {
                 text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
                 className: 'btn btn-sm btn-outline-success',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6] // Export all columns
-                }
+                    columns: [0, 1, 2, 3, 4, 5, 6],
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (typeof data === 'string' && data.includes('<')) {
+                                var tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = data;
+                                var text = tempDiv.textContent || tempDiv.innerText || '';
+                                return text.trim();
+                            }
+                            return data;
+                        }
+                    }
+                },
+                filename: function() {
+                    return 'leads_' + new Date().toISOString().split('T')[0];
+                },
+                extension: '.xlsx',
+                customize: function (xlsx) {
+                    var logoPathPng = '{{ asset("images/logo.png") }}';
+                    var logoPathSvg = '{{ asset("images/logo.svg") }}';
+                    
+                    fetch(logoPathPng).catch(function() {
+                        return fetch(logoPathSvg);
+                    }).then(function(response) {
+                        if (response && response.ok) {
+                            return response.arrayBuffer();
+                        }
+                        return null;
+                    }).then(function(arrayBuffer) {
+                        if (arrayBuffer && xlsx.zip) {
+                            var imagePath = 'xl/media/logo.png';
+                            xlsx.zip.file(imagePath, arrayBuffer);
+                        }
+                    }).catch(function(error) {
+                        // Logo loading failed, continue without it
+                    });
+                },
+                messageTop: 'Lead Assignment System\nGenerated: {{ date("Y-m-d") }}',
+                messageBottom: '{{ date("F j, Y") }} at {{ date("g:i A") }}'
             }
         ],
         language: {

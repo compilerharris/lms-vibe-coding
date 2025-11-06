@@ -73,7 +73,7 @@
                             <div class="card-body">
                                 @if($channelPartner->assignedLeads->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table id="channelPartnerLeadsTable" class="table table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -203,4 +203,26 @@
         background: #e9ecef;
     }
 </style>
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('#channelPartnerLeadsTable').DataTable({
+        responsive: true,
+        pageLength: 25,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search leads:",
+            lengthMenu: "Show _MENU_ leads per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ leads",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+});
+</script>
 @endsection

@@ -152,9 +152,10 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-sm">
+                            <table id="channelPartnerPerformanceTable" class="table table-sm">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Channel Partner</th>
                                         <th>Total Leads</th>
                                         <th>Performance</th>
@@ -163,6 +164,7 @@
                                 <tbody>
                                     @foreach($projectAnalytics['leadsByChannelPartner'] as $cpName => $leadCount)
                                     <tr>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $cpName }}</td>
                                         <td>
                                             <span class="badge bg-primary">{{ $leadCount }}</span>
@@ -196,11 +198,28 @@ $(document).ready(function() {
     $('#projectLeadsTable').DataTable({
         responsive: true,
         pageLength: 25,
-        order: [[6, 'desc']], // Sort by Created date descending
+        order: [[0, 'asc']], // Sort by # column ascending
         language: {
             search: "Search leads:",
             lengthMenu: "Show _MENU_ leads per page",
             info: "Showing _START_ to _END_ of _TOTAL_ leads",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+    
+    $('#channelPartnerPerformanceTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search:",
+            lengthMenu: "Show _MENU_ entries per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
             paginate: {
                 first: "First",
                 last: "Last",

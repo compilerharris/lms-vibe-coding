@@ -311,9 +311,28 @@ $(document).ready(function() {
     $('#recentLeadsTable').DataTable({
         responsive: true,
         pageLength: 10,
-        order: [[7, 'desc']], // Sort by Created date descending
+        order: [[0, 'asc']], // Sort by # column ascending
         columnDefs: [
-            { orderable: false, targets: [8] } // Disable sorting on Action column
+            { orderable: false, targets: [9] } // Disable sorting on Action column
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'csv',
+                text: '<i class="fas fa-file-csv me-2"></i>Export CSV',
+                className: 'btn btn-sm btn-outline-success',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] // Export all columns except Action
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
+                className: 'btn btn-sm btn-outline-success',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] // Export all columns except Action
+                }
+            }
         ],
         language: {
             search: "Search leads:",

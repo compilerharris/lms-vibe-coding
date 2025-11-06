@@ -117,7 +117,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table id="projectLeadsShowTable" class="table table-striped table-hover">
                                         <thead class="table-dark">
                                             <tr>
                                                 <th>#</th>
@@ -178,4 +178,26 @@
         </div>
     </div>
 
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('#projectLeadsShowTable').DataTable({
+        responsive: true,
+        pageLength: 25,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search leads:",
+            lengthMenu: "Show _MENU_ leads per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ leads",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+});
+</script>
 @endsection

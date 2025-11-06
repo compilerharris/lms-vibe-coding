@@ -80,7 +80,7 @@
                             <div class="card-body">
                                 @if($developer->projects->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="developerProjectsTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -128,7 +128,7 @@
                             <div class="card-body">
                                 @if($developer->channelPartners->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="developerChannelPartnersTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -176,7 +176,7 @@
                             <div class="card-body">
                                 @if($developer->users->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="developerUsersTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -216,6 +216,62 @@
                 </div>
             </div>
 
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('#developerProjectsTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search projects:",
+            lengthMenu: "Show _MENU_ projects per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ projects",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+    
+    $('#developerChannelPartnersTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search partners:",
+            lengthMenu: "Show _MENU_ partners per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ partners",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+    
+    $('#developerUsersTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search users:",
+            lengthMenu: "Show _MENU_ users per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ users",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+});
+</script>
 @endsection
 
 @section('styles')

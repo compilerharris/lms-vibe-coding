@@ -65,7 +65,7 @@
                             <div class="card-body">
                                 @if($projects->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="projectsTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -122,7 +122,7 @@
                             <div class="card-body">
                                 @if($channelPartners->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="channelPartnersTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -171,7 +171,7 @@
                             <div class="card-body">
                                 @if($recentLeads->count() > 0)
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table id="recentLeadsTable" class="table table-sm">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -301,6 +301,81 @@ $(document).ready(function() {
                 y: {
                     beginAtZero: true
                 }
+            }
+        }
+    });
+    @endif
+
+    // Projects Table
+    $('#projectsTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search projects:",
+            lengthMenu: "Show _MENU_ projects per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ projects",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+    
+    // Channel Partners Table
+    $('#channelPartnersTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        language: {
+            search: "Search partners:",
+            lengthMenu: "Show _MENU_ partners per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ partners",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+    });
+
+    // DataTable for recent leads
+    @if($recentLeads->count() > 0)
+    $('#recentLeadsTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by # column ascending
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'csv',
+                text: '<i class="fas fa-file-csv me-2"></i>Export CSV',
+                className: 'btn btn-sm btn-outline-success',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6] // Export all columns
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
+                className: 'btn btn-sm btn-outline-success',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6] // Export all columns
+                }
+            }
+        ],
+        language: {
+            search: "Search leads:",
+            lengthMenu: "Show _MENU_ leads per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ leads",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
             }
         }
     });

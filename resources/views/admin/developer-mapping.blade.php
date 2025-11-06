@@ -40,7 +40,7 @@
                 <!-- Mapping Form -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h6 class="mb-0"><i class="fas fa-plus me-2"></i>Create/Update Mapping new new</h6>
+                        <h6 class="mb-0"><i class="fas fa-plus me-2"></i>Create/Update Mapping</h6>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('developer-mapping.store') }}" method="POST" id="mappingForm">

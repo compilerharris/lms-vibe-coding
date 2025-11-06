@@ -21,10 +21,26 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/laravel
-            git pull origin main
+            echo "Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Installing dependencies..."
             composer install --no-dev --optimize-autoloader
+
+            echo "Running migrations..."
             php artisan migrate --force
+
+            echo "Clearing & caching config/routes/views..."
+            php artisan optimize:clear
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
+
+            echo "Adjusting permissions..."
+            sudo chown -R ubuntu:www-data /var/www/laravel
+            sudo chmod -R 775 /var/www/laravel/storage /var/www/laravel/bootstrap/cache
+
+            echo "Restarting services..."
+            sudo systemctl restart php8.3-fpm
             sudo systemctl reload nginx

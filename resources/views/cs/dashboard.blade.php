@@ -404,6 +404,11 @@ $(document).ready(function() {
 @section('styles')
 <style>
     /* Style export buttons consistently */
+    .dt-buttons {
+        display: flex !important;
+        gap: 0.5rem !important;
+    }
+    
     .dt-buttons .btn {
         border-radius: 5px !important;
         font-weight: 500 !important;
@@ -411,6 +416,11 @@ $(document).ready(function() {
         border: 1px solid #28a745 !important;
         color: #28a745 !important;
         background-color: transparent !important;
+        margin-right: 0 !important;
+    }
+    
+    .dt-buttons .btn:not(:last-child) {
+        margin-right: 0.5rem !important;
     }
     
     .dt-buttons .btn:hover {

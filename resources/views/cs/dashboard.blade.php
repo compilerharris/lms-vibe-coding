@@ -403,6 +403,27 @@ $(document).ready(function() {
 
 @section('styles')
 <style>
+    /* Style export buttons consistently */
+    .dt-buttons .btn {
+        border-radius: 5px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+        border: 1px solid #28a745 !important;
+        color: #28a745 !important;
+        background-color: transparent !important;
+    }
+    
+    .dt-buttons .btn:hover {
+        background-color: #28a745 !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .dt-buttons .btn i {
+        color: inherit !important;
+    }
+    
     .avatar-circle {
         width: 35px;
         height: 35px;

@@ -18,6 +18,9 @@ use App\Http\Controllers\ApiTestController;
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/login/confirm', [LoginController::class, 'showConfirmLogin'])->name('login.confirm');
+Route::post('/login/force', [LoginController::class, 'forceLogin'])->name('login.force');
+Route::post('/login/cancel', [LoginController::class, 'cancelLogin'])->name('login.cancel');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Redirect root to login

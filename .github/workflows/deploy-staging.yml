@@ -35,7 +35,9 @@ jobs:
             php artisan view:cache
 
             sudo chown -R ubuntu:www-data /var/www/laravel-staging
-            sudo chmod -R 775 /var/www/laravel-staging/storage/var/www/laravel-staging/bootstrap/cache
+            sudo find /var/www/laravel-staging/storage -type d -exec chmod 775 {} \;
+            sudo find /var/www/laravel-staging/storage -type f -exec chmod 664 {} \;
+            sudo chmod -R 775 /var/www/laravel-staging/bootstrap/cache
 
             sudo systemctl restart php8.3-fpm
             sudo systemctl reload nginx

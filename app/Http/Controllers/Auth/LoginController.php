@@ -28,11 +28,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             
-            // Get current session ID before checking (session might not be saved to DB yet)
+            // Get current session ID before checking
             $currentSessionId = $request->session()->getId();
             
             // Check if user has an active session on another device
-            // Note: We check before session is saved to DB, so current session won't be found
+            // Note: We exclude the current session by ID, so even if it's in DB, it won't be counted
             $activeSession = $this->getActiveSession($user->id, $currentSessionId);
             
             if ($activeSession) {

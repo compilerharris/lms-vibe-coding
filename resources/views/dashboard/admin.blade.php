@@ -13,7 +13,7 @@
                     <div class="col-12">
                         <div class="row mb-3">
                             <div class="col-12">
-                                <h3><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h3>
+                                <h3><i class="fas fa-tachometer-alt me-2"></i>Admin Test Dashboard</h3>
                                 <p class="text-muted small">Welcome back, {{ Auth::user()->name }}! Here's what's happening with your leads.</p>
                             </div>
                         </div>

@@ -1,0 +1,45 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://panel.anarockdigital.in
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PROD_EC2_SSH_KEY }}
+          script: |
+            cd /var/www/laravel-production
+            git fetch origin main
+            git reset --hard origin/main
+
+            composer install --no-dev --optimize-autoloader
+
+            php artisan migrate --force
+
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            sudo chown -R ubuntu:www-data /var/www/laravel-production
+            sudo chmod -R 775 /var/www/laravel-production/storage/var/www/laravel-production/bootstrap/cache
+
+            sudo systemctl restart php8.3-fpm
+            sudo systemctl reload nginx

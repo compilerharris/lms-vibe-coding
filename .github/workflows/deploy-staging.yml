@@ -1,0 +1,41 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    name: Deploy to Staging Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.STAGING_EC2_SSH_KEY }}
+          script: |
+            cd /var/www/laravel-staging
+            git fetch origin staging
+            git reset --hard origin/staging
+
+            composer install --no-dev --optimize-autoloader
+
+            php artisan migrate --force
+
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            sudo chown -R ubuntu:www-data /var/www/laravel-staging
+            sudo chmod -R 775 /var/www/laravel-staging/storage/var/www/laravel-staging/bootstrap/cache
+
+            sudo systemctl restart php8.3-fpm
+            sudo systemctl reload nginx

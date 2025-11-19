@@ -59,7 +59,7 @@ class LoginController extends Controller
             $newSessionId = $request->session()->getId();
             DB::table('sessions')
                 ->where('id', $newSessionId)
-                ->update(['user_id' => $user->id]);
+                ->update(['user_id' => (int) $user->id]);
             
             // Redirect based on role
             if ($user->isAdmin()) {
@@ -85,17 +85,25 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $sessionId = $request->session()->getId();
         
         Auth::logout();
         
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        // Delete all sessions for this user
-        if ($userId) {
+        // Delete all sessions for this user (only if user_id is an integer)
+        if ($user && is_numeric($user->id)) {
             DB::table('sessions')
-                ->where('user_id', $userId)
+                ->where('user_id', $user->id)
+                ->delete();
+        }
+        
+        // Also delete the current session by ID to clean up any orphaned sessions
+        if ($sessionId) {
+            DB::table('sessions')
+                ->where('id', $sessionId)
                 ->delete();
         }
         

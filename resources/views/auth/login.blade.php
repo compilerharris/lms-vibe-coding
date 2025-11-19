@@ -92,6 +92,12 @@
                             </div>
                         @endif
 
+                        @if (session('message'))
+                            <div class="alert alert-info">
+                                {{ session('message') }}
+                            </div>
+                        @endif
+
                         <form method="POST" action="{{ route('login') }}" data-skip-loader>
                             @csrf
                             <div class="mb-3">

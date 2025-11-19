@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -25,9 +26,40 @@ class LoginController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+            
+            // Check if user already has an active session in database
+            $sessionLifetime = config('session.lifetime', 120);
+            $lastActivity = now()->subMinutes($sessionLifetime)->timestamp;
+            
+            $activeSession = DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->where('last_activity', '>', $lastActivity)
+                ->first();
+            
+            // If user has an active session, prevent login
+            if ($activeSession) {
+                Auth::logout();
+                
+                return redirect()->route('login')
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => 'You are already logged in on another device. Please logout from that device first or wait for the session to expire.',
+                    ]);
+            }
+            
+            // No active session, proceed with login
             $request->session()->regenerate();
             
-            $user = Auth::user();
+            // Logout other devices using Laravel's built-in method
+            $this->authenticate();
+            
+            // Save session and update with user_id
+            $request->session()->save();
+            $newSessionId = $request->session()->getId();
+            DB::table('sessions')
+                ->where('id', $newSessionId)
+                ->update(['user_id' => (int) $user->id]);
             
             // Redirect based on role
             if ($user->isAdmin()) {
@@ -50,13 +82,37 @@ class LoginController extends Controller
         ]);
     }
 
+
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        $sessionId = $request->session()->getId();
+        
         Auth::logout();
         
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
+        // Delete all sessions for this user (only if user_id is an integer)
+        if ($user && is_numeric($user->id)) {
+            DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->delete();
+        }
+        
+        // Also delete the current session by ID to clean up any orphaned sessions
+        if ($sessionId) {
+            DB::table('sessions')
+                ->where('id', $sessionId)
+                ->delete();
+        }
+        
         return redirect()->route('login');
     }
+
+    protected function authenticate()
+    {
+        Auth::logoutOtherDevices(request()->password);
+    }
+
 }

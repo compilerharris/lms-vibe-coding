@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'role-access' => \App\Http\Middleware\RoleAccessMiddleware::class,
         ]);
+        
+        // Enable AuthenticateSession middleware for single device login
+        $middleware->web(append: [
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

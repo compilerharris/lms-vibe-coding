@@ -62,11 +62,12 @@ class ApiTestController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20',
             'message' => 'nullable|string',
             'developer_alt_name' => 'required|string',
             'project_alt_name' => 'required|string',
             'source' => 'nullable|string|max:255',
+            'subsource' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -79,6 +80,7 @@ class ApiTestController extends Controller
                 'developer_alt_name' => $request->developer_alt_name,
                 'project_alt_name' => $request->project_alt_name,
                 'source' => $request->source,
+                'subsource' => $request->subsource,
             ];
 
             // Use a different port or external URL to avoid circular dependency

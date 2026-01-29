@@ -63,6 +63,17 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="subsource" class="form-label">Subsource</label>
+                                    <input type="text" class="form-control @error('subsource') is-invalid @enderror" 
+                                           id="subsource" name="subsource" value="{{ old('subsource') }}" placeholder="e.g., Homepage Banner, Social Media Ad">
+                                    @error('subsource')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="project_id" class="form-label">Project *</label>
                                 <select class="form-control @error('project_id') is-invalid @enderror" 

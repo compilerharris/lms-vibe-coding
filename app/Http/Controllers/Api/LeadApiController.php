@@ -23,8 +23,9 @@ class LeadApiController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
-                'phone' => 'nullable|string|max:20',
+                'phone' => 'required|string|max:20',
                 'source' => 'nullable|string|max:255',
+                'subsource' => 'nullable|string|max:255',
                 'message' => 'nullable|string',
                 'developer_alt_name' => 'required|string|exists:users,alt_name',
                 'project_alt_name' => 'required|string|exists:projects,alt_name',
@@ -62,6 +63,7 @@ class LeadApiController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'source' => $request->source,
+                'subsource' => $request->subsource,
                 'message' => $request->message,
                 'project_id' => $project->id,
                 'status' => 'new'
@@ -75,6 +77,9 @@ class LeadApiController extends Controller
                 'lead_id' => $lead->id,
                 'name' => $lead->name,
                 'email' => $lead->email,
+                'phone' => $lead->phone,
+                'source' => $lead->source,
+                'subsource' => $lead->subsource,
                 'project_id' => $lead->project_id,
                 'developer_alt_name' => $request->developer_alt_name,
                 'project_alt_name' => $request->project_alt_name

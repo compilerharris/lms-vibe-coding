@@ -167,16 +167,30 @@
                                                 </td>
                                                 <td>{{ $lead->project->developer->name }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $lead->status === 'new' ? 'primary' : ($lead->status === 'assigned' ? 'warning' : ($lead->status === 'converted' ? 'success' : 'secondary')) }}">
-                                                        {{ ucfirst($lead->status) }}
-                                                    </span>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-{{ $lead->status === 'new' ? 'primary' : ($lead->status === 'assigned' ? 'warning' : ($lead->status === 'converted' ? 'success' : ($lead->status === 'contacted' ? 'info' : 'danger'))) }} status-badge-{{ $lead->id }}">
+                                                            {{ ucfirst($lead->status) }}
+                                                        </span>
+                                                        <select class="form-select form-select-sm status-select" data-lead-id="{{ $lead->id }}" style="width: auto; min-width: 110px; font-size: 0.875rem;">
+                                                            <option value="new" {{ $lead->status === 'new' ? 'selected' : '' }}>New</option>
+                                                            <option value="assigned" {{ $lead->status === 'assigned' ? 'selected' : '' }}>Assigned</option>
+                                                            <option value="contacted" {{ $lead->status === 'contacted' ? 'selected' : '' }}>Contacted</option>
+                                                            <option value="converted" {{ $lead->status === 'converted' ? 'selected' : '' }}>Converted</option>
+                                                            <option value="lost" {{ $lead->status === 'lost' ? 'selected' : '' }}>Lost</option>
+                                                        </select>
+                                                    </div>
                                                 </td>
                                                 <td>{{ $lead->assigned_at ? $lead->assigned_at->format('M d, Y') : 'N/A' }}</td>
                                                 <td>{{ $lead->created_at->format('M d, Y') }}</td>
                                                 <td>
-                                                    <a href="{{ route('cp.lead.show', $lead) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-eye"></i> View Details
-                                                    </a>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="{{ route('cp.lead.show', $lead) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ route('cp.lead.show', $lead) }}" class="btn btn-sm btn-outline-warning" title="Edit Lead">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -340,6 +354,90 @@ $(document).ready(function() {
     });
     @endif
 
+    // Handle status change in table
+    $(document).on('change', '.status-select', function() {
+        const select = $(this);
+        const leadId = select.data('lead-id');
+        const newStatus = select.val();
+        const statusBadge = $('.status-badge-' + leadId);
+        
+        // Store original value for rollback
+        const originalStatus = select.data('original-status') || select.find('option:selected').val();
+        
+        // Disable select during update
+        select.prop('disabled', true);
+        
+        // Update badge immediately for better UX
+        const statusColors = {
+            'new': 'primary',
+            'assigned': 'warning',
+            'contacted': 'info',
+            'converted': 'success',
+            'lost': 'danger'
+        };
+        
+        statusBadge.removeClass('bg-primary bg-warning bg-info bg-success bg-danger');
+        statusBadge.addClass('bg-' + statusColors[newStatus]);
+        statusBadge.text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
+        
+        // Make AJAX request
+        $.ajax({
+            url: '/cp/lead/' + leadId + '/status',
+            method: 'PUT',
+            data: {
+                status: newStatus,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Success - keep the new status
+                select.data('original-status', newStatus);
+                showTableAlert('success', 'Lead status updated successfully!');
+                
+                // Re-enable select
+                select.prop('disabled', false);
+            },
+            error: function(xhr) {
+                // Rollback to original status
+                select.val(originalStatus);
+                statusBadge.removeClass('bg-primary bg-warning bg-info bg-success bg-danger');
+                statusBadge.addClass('bg-' + statusColors[originalStatus]);
+                statusBadge.text(originalStatus.charAt(0).toUpperCase() + originalStatus.slice(1));
+                
+                let errorMessage = 'Failed to update status. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                
+                showTableAlert('danger', errorMessage);
+                
+                // Re-enable select
+                select.prop('disabled', false);
+            }
+        });
+    });
+    
+    // Function to show alert messages in table
+    function showTableAlert(type, message) {
+        // Remove existing alerts
+        $('.table-status-alert').remove();
+        
+        // Create alert element
+        const alert = $('<div class="alert alert-' + type + ' alert-dismissible fade show table-status-alert" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">' +
+            message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+            '</div>');
+        
+        // Insert into body
+        $('body').append(alert);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+            alert.fadeOut(function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+
     // DataTable for assigned leads
     @if($assignedLeads->count() > 0)
     $('#assignedLeadsTable').DataTable({
@@ -347,7 +445,7 @@ $(document).ready(function() {
         pageLength: 10,
         order: [[0, 'asc']], // Sort by # column ascending
         columnDefs: [
-            { orderable: false, targets: [9] } // Disable sorting on Action column
+            { orderable: false, targets: [6, 9] } // Disable sorting on Status and Action columns
         ],
         dom: 'Bfrtip',
         buttons: [
@@ -500,6 +598,52 @@ $(document).ready(function() {
 
     .stat-card.dark .card-body {
         color: white;
+    }
+
+    /* Status select styling */
+    .status-select {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .status-select:hover:not(:disabled) {
+        border-color: #a136aa;
+        box-shadow: 0 0 0 0.2rem rgba(161, 54, 170, 0.1);
+    }
+
+    .status-select:focus {
+        border-color: #a136aa;
+        box-shadow: 0 0 0 0.2rem rgba(161, 54, 170, 0.25);
+        outline: 0;
+    }
+
+    .status-select:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Action buttons styling */
+    #assignedLeadsTable .btn-group .btn {
+        height: 28px;
+        min-height: 28px;
+        max-height: 28px;
+        padding: 0.2rem 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    #assignedLeadsTable .btn-group {
+        display: inline-flex;
+        vertical-align: middle;
+    }
+
+    #assignedLeadsTable tbody td:last-child {
+        vertical-align: middle !important;
+        padding: 0.5rem !important;
     }
 </style>
         </div>

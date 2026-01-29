@@ -50,12 +50,15 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role-access:channel_partner'])->group(function () {
         Route::get('/cp/dashboard', [CPDashboardController::class, 'index'])->name('cp.dashboard');
         Route::get('/cp/lead/{lead}', [CPDashboardController::class, 'showLead'])->name('cp.lead.show');
+        Route::put('/cp/lead/{lead}/status', [CPDashboardController::class, 'updateLeadStatus'])->name('cp.lead.update-status');
     });
 
     // CS Dashboard (CS and Biddable only)
     Route::middleware(['role-access:cs,biddable'])->group(function () {
         Route::get('/cs/dashboard', [CSDashboardController::class, 'index'])->name('cs.dashboard');
         Route::get('/cs/lead/{lead}', [CSDashboardController::class, 'showLead'])->name('cs.lead.show');
+        Route::get('/cs/projects', [CSDashboardController::class, 'projects'])->name('cs.projects.index');
+        Route::get('/cs/projects/{project}/leads', [CSDashboardController::class, 'projectLeads'])->name('cs.projects.leads');
     });
 
     // Channel Partner Routes (Admin, Leader access only) - Read-only
@@ -77,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Lead Routes (All authenticated users, but with role-based filtering in controller)
     Route::resource('leads', LeadController::class);
+    Route::put('/leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.update-status');
 
             // User Management Routes (Admin only)
             Route::middleware(['role-access:admin'])->group(function () {

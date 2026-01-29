@@ -29,6 +29,7 @@
                                         <p><strong>Email:</strong> {{ $lead->email }}</p>
                                         <p><strong>Phone:</strong> {{ $lead->phone ?? 'Not provided' }}</p>
                                         <p><strong>Source:</strong> {{ $lead->source ?? 'Not specified' }}</p>
+                                        <p><strong>Subsource:</strong> {{ $lead->subsource ?? 'Not specified' }}</p>
                                     </div>
                                     <div class="col-md-6">
                                         <p><strong>Status:</strong> 

@@ -28,6 +28,14 @@
                 </a>
             </li>
             
+            @if(Auth::user()->isCS() || Auth::user()->isBiddable())
+            <li class="nav-item mb-1">
+                <a class="nav-link {{ $active === 'cs-projects' ? 'active' : '' }}" href="{{ route('cs.projects.index') }}">
+                    <i class="fas fa-project-diagram me-2"></i>Projects
+                </a>
+            </li>
+            @endif
+            
             @if(Auth::user()->isAdmin() || Auth::user()->isLeader())
             <li class="nav-item mb-1">
                 <a class="nav-link {{ $active === 'channel-partners' ? 'active' : '' }}" href="{{ route('channel-partners.index') }}">

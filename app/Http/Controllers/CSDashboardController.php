@@ -82,6 +82,35 @@ class CSDashboardController extends Controller
     }
 
     /**
+     * Display list of projects for CS/Biddable users.
+     */
+    public function projects()
+    {
+        $projects = Project::with('developer')
+            ->withCount('leads')
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->paginate(15);
+
+        return view('cs.projects', compact('projects'));
+    }
+
+    /**
+     * Display leads for a specific project.
+     */
+    public function projectLeads(Project $project)
+    {
+        $project->load('developer');
+        
+        $leads = Lead::with(['project.developer', 'assignedUser'])
+            ->where('project_id', $project->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(25);
+
+        return view('cs.project-leads', compact('project', 'leads'));
+    }
+
+    /**
      * Get analytics data for CS dashboard.
      */
     private function getAnalytics()

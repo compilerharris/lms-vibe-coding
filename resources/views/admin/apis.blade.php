@@ -64,9 +64,9 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="phone" class="form-label">Phone</label>
+                                        <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="phone" name="phone" 
-                                               value="{{ old('phone') }}">
+                                               value="{{ old('phone') }}" required>
                                         @error('phone')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
@@ -84,6 +84,20 @@
                                             @endforeach
                                         </select>
                                         @error('source')
+                                            <div class="text-danger small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="subsource" class="form-label">Subsource</label>
+                                        <input type="text" class="form-control" id="subsource" name="subsource" 
+                                               value="{{ old('subsource') }}" 
+                                               placeholder="e.g., Homepage Banner, Social Media Ad">
+                                        @error('subsource')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -164,14 +178,15 @@
                                 <ul class="list-unstyled">
                                     <li><i class="fas fa-check text-success me-2"></i>name</li>
                                     <li><i class="fas fa-check text-success me-2"></i>email</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>phone</li>
                                     <li><i class="fas fa-check text-success me-2"></i>developer_alt_name</li>
                                     <li><i class="fas fa-check text-success me-2"></i>project_alt_name</li>
                                 </ul>
                                 <h6 class="mt-3">Optional Fields</h6>
                                 <ul class="list-unstyled">
-                                    <li><i class="fas fa-info text-info me-2"></i>phone</li>
-                                    <li><i class="fas fa-info text-info me-2"></i>message</li>
                                     <li><i class="fas fa-info text-info me-2"></i>source</li>
+                                    <li><i class="fas fa-info text-info me-2"></i>subsource</li>
+                                    <li><i class="fas fa-info text-info me-2"></i>message</li>
                                 </ul>
                             </div>
                         </div>

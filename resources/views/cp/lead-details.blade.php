@@ -29,14 +29,34 @@
                                         <p><strong>Email:</strong> {{ $lead->email }}</p>
                                         <p><strong>Phone:</strong> {{ $lead->phone ?? 'Not provided' }}</p>
                                         <p><strong>Source:</strong> {{ $lead->source ?? 'Not specified' }}</p>
+                                        <p><strong>Subsource:</strong> {{ $lead->subsource ?? 'Not specified' }}</p>
                                     </div>
                                     <div class="col-md-6">
                                         <p><strong>Status:</strong> 
-                                            <span class="badge bg-{{ $lead->status === 'new' ? 'primary' : ($lead->status === 'assigned' ? 'warning' : ($lead->status === 'converted' ? 'success' : 'secondary')) }}">
+                                            <span class="badge bg-{{ $lead->status === 'new' ? 'primary' : ($lead->status === 'assigned' ? 'warning' : ($lead->status === 'converted' ? 'success' : ($lead->status === 'contacted' ? 'info' : 'danger'))) }}" id="current-status-badge">
                                                 {{ ucfirst($lead->status) }}
                                             </span>
                                         </p>
-                                        <p><strong>Created:</strong> {{ $lead->created_at->format('M d, Y H:i') }}</p>
+                                        <div class="mt-3">
+                                            <label for="status-select" class="form-label fw-bold">Change Status:</label>
+                                            <form id="status-update-form" method="POST" action="{{ route('cp.lead.update-status', $lead) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="input-group">
+                                                    <select name="status" id="status-select" class="form-select">
+                                                        <option value="new" {{ $lead->status === 'new' ? 'selected' : '' }}>New</option>
+                                                        <option value="assigned" {{ $lead->status === 'assigned' ? 'selected' : '' }}>Assigned</option>
+                                                        <option value="contacted" {{ $lead->status === 'contacted' ? 'selected' : '' }}>Contacted</option>
+                                                        <option value="converted" {{ $lead->status === 'converted' ? 'selected' : '' }}>Converted</option>
+                                                        <option value="lost" {{ $lead->status === 'lost' ? 'selected' : '' }}>Lost</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary" id="status-update-btn">
+                                                        <i class="fas fa-save me-1"></i>Update
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <p class="mt-3"><strong>Created:</strong> {{ $lead->created_at->format('M d, Y H:i') }}</p>
                                         <p><strong>Last Updated:</strong> {{ $lead->updated_at->format('M d, Y H:i') }}</p>
                                         @if($lead->assigned_at)
                                             <p><strong>Assigned:</strong> {{ $lead->assigned_at->format('M d, Y H:i') }}</p>
@@ -122,6 +142,94 @@
             </div>
         </div>
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Handle status update form submission
+    $('#status-update-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        const form = $(this);
+        const submitBtn = $('#status-update-btn');
+        const originalBtnText = submitBtn.html();
+        const selectedStatus = $('#status-select').val();
+        
+        // Disable button and show loading state
+        submitBtn.prop('disabled', true);
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-1"></span>Updating...');
+        
+        $.ajax({
+            url: form.attr('action'),
+            method: 'PUT',
+            data: {
+                status: selectedStatus,
+                _token: $('input[name="_token"]').val()
+            },
+            success: function(response) {
+                // Update the status badge
+                const statusBadge = $('#current-status-badge');
+                const statusColors = {
+                    'new': 'primary',
+                    'assigned': 'warning',
+                    'contacted': 'info',
+                    'converted': 'success',
+                    'lost': 'danger'
+                };
+                
+                statusBadge.removeClass('bg-primary bg-warning bg-info bg-success bg-danger');
+                statusBadge.addClass('bg-' + statusColors[selectedStatus]);
+                statusBadge.text(response.lead.status.charAt(0).toUpperCase() + response.lead.status.slice(1));
+                
+                // Show success message
+                showAlert('success', 'Lead status updated successfully!');
+                
+                // Re-enable button
+                submitBtn.prop('disabled', false);
+                submitBtn.html(originalBtnText);
+            },
+            error: function(xhr) {
+                let errorMessage = 'Failed to update status. Please try again.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).flat().join(', ');
+                }
+                
+                showAlert('danger', errorMessage);
+                
+                // Re-enable button
+                submitBtn.prop('disabled', false);
+                submitBtn.html(originalBtnText);
+            }
+        });
+    });
+    
+    // Function to show alert messages
+    function showAlert(type, message) {
+        // Remove existing alerts
+        $('.status-alert').remove();
+        
+        // Create alert element
+        const alert = $('<div class="alert alert-' + type + ' alert-dismissible fade show status-alert" role="alert">' +
+            message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+            '</div>');
+        
+        // Insert at the top of the card body
+        $('.card-body').first().prepend(alert);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+            alert.fadeOut(function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+});
+</script>
 @endsection
 
 @section('styles')

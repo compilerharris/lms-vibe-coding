@@ -15,6 +15,7 @@ class Lead extends Model
         'phone',
         'message',
         'source',
+        'subsource',
         'project_id',
         'assigned_user_id',
         'status',

@@ -25,6 +25,9 @@ class LeadController extends Controller
             $leads = Lead::where('assigned_user_id', $user->id)
                 ->with(['project'])
                 ->get();
+        } elseif ($user->isCS() || $user->isBiddable()) {
+            // CS and Biddable users can see all leads (read-only)
+            $leads = Lead::with(['project', 'assignedUser'])->get();
         } else {
             $leads = collect();
         }
@@ -55,7 +58,8 @@ class LeadController extends Controller
             'email' => 'required|email',
             'phone' => 'nullable|string|max:20',
             'message' => 'nullable|string',
-            'source' => 'nullable|string',
+            'source' => 'nullable|string|max:255',
+            'subsource' => 'nullable|string|max:255',
             'project_id' => 'required|uuid|exists:projects,id',
         ]);
 
@@ -70,6 +74,8 @@ class LeadController extends Controller
 
     public function show(Lead $lead)
     {
+        // All authenticated users can view leads (read-only for CS/Biddable)
+        $lead->load(['project', 'assignedUser']);
         return view('leads.show', compact('lead'));
     }
 
@@ -108,7 +114,8 @@ class LeadController extends Controller
             'email' => 'required|email',
             'phone' => 'nullable|string|max:20',
             'message' => 'nullable|string',
-            'source' => 'nullable|string',
+            'source' => 'nullable|string|max:255',
+            'subsource' => 'nullable|string|max:255',
             'project_id' => 'required|uuid|exists:projects,id',
             'assigned_user_id' => 'nullable|exists:users,id',
             'status' => 'required|in:new,assigned,contacted,converted,lost',
@@ -131,6 +138,67 @@ class LeadController extends Controller
 
         return redirect()->route('leads.index')
             ->with('success', 'Lead deleted successfully.');
+    }
+
+    /**
+     * Update the status of a lead.
+     * Different roles have different permissions:
+     * - Admin/Leader: Can update any lead's status
+     * - Developer: Can update status of leads in their projects
+     * - Channel Partner: Can only update status of leads assigned to them
+     */
+    public function updateStatus(Request $request, Lead $lead)
+    {
+        $user = Auth::user();
+        
+        // Check permissions based on role
+        if ($user->isAdmin() || $user->isLeader()) {
+            // Admin and Leader can update any lead's status
+        } elseif ($user->isDeveloper()) {
+            // Developer can only update leads in their projects
+            if (!$lead->project || $lead->project->developer_user_id !== $user->id) {
+                abort(403, 'You can only update leads in your projects.');
+            }
+        } elseif ($user->isChannelPartner()) {
+            // Channel Partner can only update leads assigned to them
+            if ($lead->assigned_user_id !== $user->id) {
+                abort(403, 'You can only update leads assigned to you.');
+            }
+        } elseif ($user->isCS() || $user->isBiddable()) {
+            // CS and Biddable users have read-only access
+            abort(403, 'You have read-only access to leads. You cannot update lead status.');
+        } else {
+            abort(403, 'You do not have permission to update lead status.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:new,assigned,contacted,converted,lost',
+        ]);
+
+        $oldStatus = $lead->status;
+        $lead->update([
+            'status' => $request->status,
+        ]);
+
+        \Log::info('Lead status updated', [
+            'lead_id' => $lead->id,
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_role' => $user->role->name ?? 'unknown',
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lead status updated successfully.',
+                'lead' => $lead->fresh(['project', 'assignedUser']),
+            ]);
+        }
+
+        return redirect()->route('leads.index')
+            ->with('success', 'Lead status updated successfully.');
     }
 
     private function assignLeadToChannelPartner(Lead $lead)

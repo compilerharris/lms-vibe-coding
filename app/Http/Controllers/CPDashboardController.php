@@ -97,6 +97,51 @@ class CPDashboardController extends Controller
     }
 
     /**
+     * Update the status of a lead assigned to the channel partner.
+     */
+    public function updateLeadStatus(Request $request, Lead $lead)
+    {
+        $user = Auth::user();
+        
+        if (!$user->isChannelPartner()) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Ensure this lead is assigned to the current CP
+        if ($lead->assigned_user_id !== $user->id) {
+            abort(403, 'You can only update leads assigned to you.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:new,assigned,contacted,converted,lost',
+        ]);
+
+        $oldStatus = $lead->status;
+        $lead->update([
+            'status' => $request->status,
+        ]);
+
+        \Log::info('Channel Partner updated lead status', [
+            'lead_id' => $lead->id,
+            'channel_partner_id' => $user->id,
+            'channel_partner_name' => $user->name,
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lead status updated successfully.',
+                'lead' => $lead->fresh(['project', 'assignedUser']),
+            ]);
+        }
+
+        return redirect()->route('cp.lead.show', $lead)
+            ->with('success', 'Lead status updated successfully.');
+    }
+
+    /**
      * Get analytics data for the channel partner.
      */
     private function getAnalytics($user)

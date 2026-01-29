@@ -11,9 +11,11 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-user me-2"></i>Lead Details</h2>
                     <div>
+                        @if(Auth::user()->isAdmin() || Auth::user()->isLeader())
                         <a href="{{ route('leads.edit', $lead) }}" class="btn btn-warning">
                             <i class="fas fa-edit me-2"></i>Edit Lead
                         </a>
+                        @endif
                         <a href="{{ route('leads.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Leads
                         </a>
@@ -46,6 +48,13 @@
                                     <div class="col-md-6 mb-3">
                                         <strong>Source:</strong>
                                         <p class="text-muted">{{ $lead->source ?? 'Not specified' }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <strong>Subsource:</strong>
+                                        <p class="text-muted">{{ $lead->subsource ?? 'Not specified' }}</p>
                                     </div>
                                 </div>
 
@@ -121,6 +130,7 @@
                             </div>
                         </div>
 
+                        @if(Auth::user()->isAdmin() || Auth::user()->isLeader())
                         <div class="card mt-3">
                             <div class="card-header">
                                 <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Actions</h5>
@@ -142,6 +152,19 @@
                                 </div>
                             </div>
                         </div>
+                        @elseif(Auth::user()->isCS() || Auth::user()->isBiddable())
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Read-Only Access</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-lock me-2"></i>
+                                    You have read-only access to leads. Contact an administrator to make changes.
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

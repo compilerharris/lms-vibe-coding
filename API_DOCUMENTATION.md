@@ -22,6 +22,7 @@ Creates a new lead and automatically assigns it to a channel partner using round
     "email": "john@example.com",
     "phone": "+1234567890",
     "source": "Website",
+    "subsource": "Homepage Banner",
     "message": "Interested in your services",
     "developer_alt_name": "SAMGYSSSZ",
     "project_alt_name": "SAMLYHBR0"
@@ -31,12 +32,13 @@ Creates a new lead and automatically assigns it to a channel partner using round
 #### Required Fields
 - `name` (string, max 255) - Lead's full name
 - `email` (string, email format, max 255) - Lead's email address
+- `phone` (string, max 20) - Lead's phone number
 - `developer_alt_name` (string) - Alternative name of the developer (auto-generated)
 - `project_alt_name` (string) - Alternative name of the project (auto-generated)
 
 #### Optional Fields
-- `phone` (string, max 20) - Lead's phone number
 - `source` (string, max 255) - Lead source (e.g., "Website", "Facebook", "Google")
+- `subsource` (string, max 255) - Lead subsource (e.g., "Homepage Banner", "Social Media Ad", "Email Campaign")
 - `message` (string) - Additional message from the lead
 
 #### Success Response (201)
@@ -151,6 +153,7 @@ const leadData = {
     email: "jane@example.com",
     phone: "+1234567890",
     source: "Website",
+    subsource: "Homepage Banner",
     message: "Interested in your services",
     developer_alt_name: "SAMGYSSSZ",
     project_alt_name: "SAMLYHBR0"
@@ -202,6 +205,7 @@ $leadData = [
     'email' => 'john@example.com',
     'phone' => '+1234567890',
     'source' => 'Website',
+    'subsource' => 'Homepage Banner',
     'message' => 'Interested in your services',
     'developer_alt_name' => 'SAMGYSSSZ',
     'project_alt_name' => 'SAMLYHBR0'
@@ -246,6 +250,7 @@ lead_data = {
     'email': 'john@example.com',
     'phone': '+1234567890',
     'source': 'Website',
+    'subsource': 'Homepage Banner',
     'message': 'Interested in your services',
     'developer_alt_name': 'SAMGYSSSZ',
     'project_alt_name': 'SAMLYHBR0'
@@ -279,8 +284,9 @@ Create an HTML form that collects lead information:
 <form id="leadForm">
     <input type="text" name="name" placeholder="Full Name" required>
     <input type="email" name="email" placeholder="Email" required>
-    <input type="tel" name="phone" placeholder="Phone">
+    <input type="tel" name="phone" placeholder="Phone" required>
     <input type="text" name="source" placeholder="Source">
+    <input type="text" name="subsource" placeholder="Subsource">
     <textarea name="message" placeholder="Message"></textarea>
     <select name="developer_alt_name" required>
         <option value="">Select Developer</option>

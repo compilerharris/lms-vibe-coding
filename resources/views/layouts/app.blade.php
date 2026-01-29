@@ -321,6 +321,25 @@
         .navbar .dropdown-menu {
             right: 0;
         }
+        
+        /* Footer styling */
+        .footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            margin-top: 2rem;
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .footer p {
+            margin-bottom: 0.25rem;
+        }
+        
+        .footer strong {
+            color: #a136aa;
+        }
     </style>
     @yield('styles')
 </head>
@@ -355,6 +374,22 @@
     <div class="container-fluid">
         @yield('content')
     </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="mb-0 text-muted" style="font-size: 0.75rem;">
+                        &copy; {{ date('Y') }} Lead Management System. All rights reserved.
+                    </p>
+                    <p class="mb-0 text-muted" style="font-size: 0.75rem;">
+                        Developed and Maintained by <strong><a href="https://anarock.com/ada" target="_blank" rel="noopener noreferrer" style="color: #a136aa; text-decoration: none;">Anarock Digital</a></strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

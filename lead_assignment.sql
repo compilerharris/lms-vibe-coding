@@ -240,7 +240,7 @@ CREATE TABLE `projects` (
 --
 
 INSERT INTO `projects` (`id`, `name`, `developer_user_id`, `alt_name`, `description`, `is_active`, `round_robin_count`, `last_assigned_cp_number`, `created_at`, `updated_at`) VALUES
-('019a2487-cc10-739a-b569-8cac446ec05c', 'Sample Project', '019a2488-1a5f-7259-be1b-94abb13ed907', 'SAMUPGGYC', 'A sample project for testing the lead assignment system', 1, 1, NULL, '2025-10-27 01:47:50', '2025-10-27 09:07:54'),
+('019a2487-cc10-739a-b569-8cac446ec05c', 'Sample Project', '019a2488-1a5f-7259-be1b-94abb13ed907', 'SAMUPGGYC', 'A sample project for testing the Lead Assignment System', 1, 1, NULL, '2025-10-27 01:47:50', '2025-10-27 09:07:54'),
 ('019a29eb-9224-7269-bb12-5e8bdf52dec4', 'Sunrise Apartments', '019a29eb-8251-72ba-ad98-adcc6601b8c5', 'SUNRISE123', 'Luxury apartments with modern amenities', 1, 2, 1, '2025-10-28 02:54:55', '2025-10-29 07:41:39'),
 ('019a29eb-922f-7030-83dc-3cc234adee47', 'Garden Villas', '019a29eb-8251-72ba-ad98-adcc6601b8c5', 'GARDEN456', 'Spacious villas with private gardens', 1, 2, 1, '2025-10-28 02:54:55', '2025-10-29 07:42:16'),
 ('019a29eb-9232-7379-b7b6-98b737b98c5b', 'Tech Towers', '019a29eb-84d7-7374-9888-f8bea56e4ffc', 'TECH789', 'Modern office towers in tech district', 1, 1, NULL, '2025-10-28 02:54:55', '2025-10-28 02:54:55'),

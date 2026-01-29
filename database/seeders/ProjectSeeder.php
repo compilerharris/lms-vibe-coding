@@ -19,7 +19,7 @@ class ProjectSeeder extends Seeder
                 ['name' => 'Sample Project'],
                 [
                     'name' => 'Sample Project',
-                    'description' => 'A sample project for testing the lead assignment system',
+                    'description' => 'A sample project for testing the Lead Management System',
                     'developer_id' => $developer->id,
                     'is_active' => true,
                 ]

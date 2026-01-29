@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Lead Assignment System</title>
+    <title>Login - Lead Management System</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}">
@@ -54,7 +54,7 @@
             <div class="col-md-6">
                 <div class="login-card">
                     <div class="login-header">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Lead Assignment System" class="mb-3" style="height: 60px; width: auto; background: white; padding: 12px; border-radius: 12px;">
+                        <img src="{{ asset('images/logo.svg') }}" alt="Lead Management System" class="mb-3" style="height: 60px; width: auto; background: white; padding: 12px; border-radius: 12px;">
                     </div>
                     <div class="login-body">
                         @if ($errors->any())

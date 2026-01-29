@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Dashboard - Lead Assignment System')
+@section('title', 'Admin Dashboard - Lead Management System')
 
 @section('content')
         <div class="row">

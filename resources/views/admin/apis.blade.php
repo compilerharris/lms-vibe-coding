@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'API Testing - Lead Assignment System')
+@section('title', 'API Testing - Lead Management System')
 
 @section('content')
             <!-- Sidebar -->
@@ -230,6 +230,145 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Sample JavaScript Code -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-code me-2"></i>Sample JavaScript Code for Landing Page Integration</h6>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="copySampleCode()" id="copyCodeBtn">
+                            <i class="fas fa-copy me-1"></i>Copy Code
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Copy and paste this code into your landing page to integrate the Lead Management API.
+                        </p>
+                        <pre id="sampleCode" class="bg-light p-3 rounded" style="max-height: 500px; overflow-y: auto; font-size: 0.75rem; line-height: 1.5;"><code>
+&lt;!-- Lead Management API Integration Script --&gt;
+&lt;script&gt;
+
+    const API_URL = '{{ url('/api/v1/leads') }}'; // Update this with your actual API endpoint
+    const DEVELOPER_ALT_NAME = 'YOUR_DEVELOPER_ALT_NAME'; // Replace with your developer alt name
+    const PROJECT_ALT_NAME = 'YOUR_PROJECT_ALT_NAME'; // Replace with your project alt name
+
+    /**
+    * Function to get URL query parameters
+    * @param {string} param - Parameter name to get from URL
+    * @returns {string|null} Parameter value or null if not found
+    */
+    function getURLParameter(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    /**
+    * Function to create a lead via API
+    * @param {Object} leadData - Lead information object
+    * @returns {Promise} Promise that resolves with the API response
+    */
+    async function createLead(leadData) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(leadData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                return {
+                    success: true,
+                    message: result.message || 'Lead created successfully',
+                    data: result
+                };
+            } else {
+                return {
+                    success: false,
+                    message: result.message || 'Failed to create lead',
+                    errors: result.errors || {}
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Network error: ' + error.message,
+                errors: {}
+            };
+        }
+    }
+
+    /**
+    * Handle form submission
+    * Replace 'yourFormId' with your actual form ID
+    */
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('yourFormId'); // Replace with your form ID
+        
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(form);
+                
+                // Get source and subsource from URL parameters
+                const source = getURLParameter('source') || getURLParameter('utm_source') || '';
+                const subsource = getURLParameter('subsource') || getURLParameter('utm_medium') || '';
+                
+                // Build lead data object
+                const leadData = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    source: source, // Automatically extracted from URL
+                    subsource: subsource, // Automatically extracted from URL
+                    message: formData.get('message') || '',
+                    developer_alt_name: DEVELOPER_ALT_NAME, // Set by developer
+                    project_alt_name: PROJECT_ALT_NAME // Set by developer
+                };
+
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Submitting...';
+                }
+
+                // Submit lead
+                const result = await createLead(leadData);
+
+                // Handle response
+                if (result.success) {
+                    alert('Thank you! Your inquiry has been submitted successfully.');
+                    form.reset(); // Reset form on success
+                } else {
+                    let errorMessage = result.message;
+                    if (result.errors && Object.keys(result.errors).length > 0) {
+                        errorMessage += '\n\nErrors:\n' + Object.values(result.errors).flat().join('\n');
+                    }
+                    alert('Error: ' + errorMessage);
+                }
+
+                // Restore button state
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            });
+        }
+    });
+&lt;/script&gt;</code></pre>
+                        <div id="copySuccess" class="alert alert-success mt-3" style="display: none;">
+                            <i class="fas fa-check-circle me-2"></i>Code copied to clipboard!
+                        </div>
+                    </div>
+                </div>
             </div>
 @endsection
 
@@ -279,6 +418,40 @@ $(document).ready(function() {
         @endif
     @endif
 });
+
+// Copy sample code to clipboard
+function copySampleCode() {
+    const codeElement = document.getElementById('sampleCode');
+    const codeText = codeElement.textContent || codeElement.innerText;
+    
+    // Create a temporary textarea to copy text
+    const textarea = document.createElement('textarea');
+    textarea.value = codeText;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        // Show success message
+        const copyBtn = document.getElementById('copyCodeBtn');
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        copyBtn.classList.remove('btn-outline-primary');
+        copyBtn.classList.add('btn-success');
+        
+        setTimeout(function() {
+            copyBtn.innerHTML = originalText;
+            copyBtn.classList.remove('btn-success');
+            copyBtn.classList.add('btn-outline-primary');
+        }, 2000);
+    } catch (err) {
+        alert('Failed to copy code. Please select and copy manually.');
+    }
+    
+    document.body.removeChild(textarea);
+}
 </script>
 @endsection
 

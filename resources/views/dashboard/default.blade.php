@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - Lead Assignment System')
+@section('title', 'Dashboard - Lead Management System')
 
 @section('content')
         <div class="row">
@@ -25,7 +25,7 @@
                         <div class="card">
                             <div class="card-body text-center py-5">
                                 <i class="fas fa-user fa-3x text-muted mb-3"></i>
-                                <h4 class="text-muted">Welcome to Lead Assignment System</h4>
+                                <h4 class="text-muted">Welcome to Lead Management System</h4>
                                 <p class="text-muted">Your dashboard is being prepared. Please contact your administrator for access permissions.</p>
                             </div>
                         </div>

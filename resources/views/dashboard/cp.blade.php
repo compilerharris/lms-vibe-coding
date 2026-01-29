@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Channel Partner Dashboard - Lead Assignment System')
+@section('title', 'Channel Partner Dashboard - Lead Management System')
 
 @section('content')
         <div class="row">

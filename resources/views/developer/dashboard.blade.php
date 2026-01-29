@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Developer Dashboard - Lead Assignment System')
+@section('title', 'Developer Dashboard - Lead Management System')
 
 @section('content')
         <!-- Sidebar -->
@@ -414,7 +414,7 @@ $(document).ready(function() {
                         // Logo loading failed, continue without it
                     });
                 },
-                messageTop: 'Lead Assignment System\nGenerated: {{ date("Y-m-d") }}',
+                messageTop: 'Lead Management System\nGenerated: {{ date("Y-m-d") }}',
                 messageBottom: '{{ date("F j, Y") }} at {{ date("g:i A") }}'
             }
         ],

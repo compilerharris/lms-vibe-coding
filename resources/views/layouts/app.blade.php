@@ -348,7 +348,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/logo.svg') }}" alt="Lead Assignment System" style="height: 40px; width: auto; background: white; padding: 8px; border-radius: 5px;" class="me-2">
+                <img src="{{ asset('images/logo.svg') }}" alt="Lead Management System" style="height: 40px; width: auto; background: white; padding: 8px; border-radius: 5px;" class="me-2">
             </a>
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">

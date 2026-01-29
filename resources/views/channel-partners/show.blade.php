@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Channel Partner Details - Lead Assignment System')
+@section('title', 'Channel Partner Details - Lead Management System')
 
 @section('content')
             <!-- Sidebar -->

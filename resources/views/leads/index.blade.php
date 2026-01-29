@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Leads - Lead Assignment System')
+@section('title', 'Leads - Lead Management System')
 
 @section('content')
         <div class="row">
@@ -163,7 +163,7 @@ window.exportToCSV = function(event) {
         }
         // Add logo reference as header comment (CSV doesn't support images)
         var logoPath = '{{ asset("images/logo.png") }}';
-        csv.push('# Lead Assignment System');
+        csv.push('# Lead Management System');
         csv.push('# Logo: ' + logoPath);
         csv.push('# Generated: ' + new Date().toLocaleString());
         csv.push('');
@@ -389,7 +389,7 @@ window.exportToExcel = function(event) {
                                     // Logo loading failed, continue without it
                                 });
                             },
-                            messageTop: 'Lead Assignment System\nGenerated: {{ date("Y-m-d") }}',
+                            messageTop: 'Lead Management System\nGenerated: {{ date("Y-m-d") }}',
                             messageBottom: '{{ date("F j, Y") }} at {{ date("g:i A") }}'
                         }
                     ],

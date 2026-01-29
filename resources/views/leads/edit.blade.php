@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Lead - Lead Assignment System')
+@section('title', 'Edit Lead - Lead Management System')
 
 @section('content')
             <!-- Sidebar -->

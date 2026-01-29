@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Project Leads - ' . $project->name . ' - Lead Assignment System')
+@section('title', 'Project Leads - ' . $project->name . ' - Lead Management System')
 
 @section('content')
         <div class="row">
